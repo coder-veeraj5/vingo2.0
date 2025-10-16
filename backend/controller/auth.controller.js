@@ -100,3 +100,65 @@ export const signout=async(req,res)=>{
          return res.status(500).json({message:"sign out error " + error.message});
     }
 }
+
+export const  sendotp=async(req,res)=>{
+    try {
+        
+        const {email}=req.body;
+        const user= await User.findOne(email);
+        if(!user){
+             return res.status(400).json({message:"email not exists"});
+        }
+
+        const otp=Math.floor(1000+ Math.random() * 9000).toString();
+        user.resetotp=otp;
+        user.isotpverified=false;
+        user.otpexpire=Date.now()+5*60*1000;
+        await user.save()
+
+        await sendotpmail(email,otp);
+
+         return res.status(200).json({message:"otp send successfully",otp});
+    } catch (error) {
+        return res.status(500).json({ error});
+    }
+}
+
+export const verifyotp=async(req,res)=>{
+    try {
+        const {email,otp}=req.body;
+        const user= await User.findOne(email);
+        if(!user || resetotp!=otp || otpexpire<Date.now()){
+                return res.status(400).json({message:"invalid or otp expires"});
+        }
+        user.resetotp=undefined;
+        user.otpexpire=undefined;
+        user.verifyotp=true;
+ 
+        await user.save();
+        
+         return res.status(200).json({message:"otp verify successfully"});
+    } catch (error) {
+              return res.status(500).json( `otp verify error ${error}`);
+    }
+}
+
+export const resetpassword=async(req,res)=>{
+    try {
+        const {email,password}=req.body;
+        const user= await User.findOne(email);
+        if(!user || verifyotp!=true){
+               return res.status(400).json({message:"otp verification required"});
+        }
+const hashedpassword= await bcrypt.hash(password,10);
+user.password=hashedpassword;
+user.verifyotp=false;
+ 
+await user.save();
+ return res.status(200).json({message:"password reset  successfully"});
+
+
+    } catch (error) {
+         return res.status(500).json( `otp verify error ${error}`);
+    }
+}

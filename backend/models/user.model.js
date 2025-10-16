@@ -24,7 +24,18 @@ import mongoose from "mongoose";
         type:String,
         enum:["user","owner","fooddelivery"],
         required:true,
+    },
+    resetotp:{
+        type:String
+    }, 
+     isotpverified:{
+        type:Boolean,
+        default:false
+    },
+    otpexpire:{
+        type:Date
     }
+
 
  },{timestamps:true})
 

@@ -11,7 +11,7 @@
     }
  })
 
- export const sendotp=async(to,otp)=>{
+ export const sendotpmail=async(to,otp)=>{
     await transporter.sendMail({
         from:process.env.EMAIL,
         to,
