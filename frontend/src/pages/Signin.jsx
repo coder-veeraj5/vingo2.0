@@ -7,6 +7,8 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios"
 import { url } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
 function Signin() {
   const primarycolor = "#ff4d2d";
   const hovercolor = "#e64323";
@@ -35,6 +37,25 @@ function Signin() {
       console.log("Signup error:", error.response?.data || error.message);
 
   }
+  const handlegoogleAuth=async ()=>{
+  
+  const provider=new GoogleAuthProvider();
+
+  const result =await signInWithPopup(auth,provider);
+  // console.log(result)
+  try {
+    const {data}=await axios.post(`${url}/api/auth/google-auth`,{
+   
+      email:result.user.email,
+     
+    },{withCredentials:true})
+    console.log(data);
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 }
   return (
     <div
@@ -69,7 +90,7 @@ function Signin() {
             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-orange-500 "
             placeholder="Enter your  email "
             style={{ border: ` 1px solid ${bordercolor}` }}
-              onChange={(e)=>setemail(e.target.value)} value={email}/>
+              onChange={(e)=>setemail(e.target.value)} value={email} required/>
         </div>
     
         <div className="mb-4">
@@ -85,7 +106,7 @@ function Signin() {
               className="  w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-orange-500 "
               placeholder="Enter your Password "
                style={{ border: ` 1px solid ${bordercolor}` }}
-                onChange={(e)=>setpassword(e.target.value)} value={password} />
+                onChange={(e)=>setpassword(e.target.value)} value={password} required />
             <button
               className="absolute curser-pointer right-3 top-[15px]"
               onClick={() => setshowpassword((e) => !e)}
@@ -103,7 +124,7 @@ function Signin() {
         style={{backgroundColor:primarycolor,color:"white"}} onClick={()=>{handelsignin()}}>signin</button>
         
          <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323] border-gray-400 hover:bg-gray-200"
-      ><FcGoogle size={20} /> <span>signin with google</span></button>
+      onClick={handlegoogleAuth}><FcGoogle size={20} /> <span>signin with google</span></button>
 
       <p className="text-center mt-2 cursor-pointer "> want to Create new account ? Signup    <Link to ="/signup" className="text-[#ff4d2d] hover:underline">signup</Link> </p>
       </div>

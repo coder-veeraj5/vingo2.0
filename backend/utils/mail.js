@@ -1,6 +1,7 @@
 
  import nodemailer from 'nodemailer'
-
+import dotenv from "dotenv"
+dotenv.config();
  const transporter= nodemailer.createTransport({
     service:"Gmail",
     port:456,
@@ -19,3 +20,5 @@
         html:`<P>Your otp for reset password is <b>${otp}</b>.it expires in 5 minutes</p>`
     })
  }
+
+ 
