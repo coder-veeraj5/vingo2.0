@@ -8,6 +8,7 @@ import axios from "axios"
 import { url } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners";
 function Signup() {
   const primarycolor = "#ff4d2d";
   const hovercolor = "#e64323";
@@ -20,10 +21,12 @@ function Signup() {
   const [password, setpassword] = useState();
   const [mobile, setmobile] = useState();
   const [err, seterr] = useState("")
+  const [loading, setloading] = useState(false)
   const navigate= useNavigate()
 
   const handelsignup=async()=>{
 // console.log({ fullname, email, mobile, password, role });
+setloading(true)
     try {
       const result = await axios.post(`${url}/api/auth/signup`,{
         fullname,email,mobile,password,role
@@ -34,9 +37,12 @@ function Signup() {
     )
       console.log(result);
       seterr("")
+      setloading(false);
 
     } catch (error) {
-      seterr(error.response.data.message)
+      console.log(error?.response?.data?.message)
+      seterr(error?.response?.data?.message);
+        setloading(false);
 
   }
 }
@@ -86,7 +92,7 @@ const handlegoogleAuth=async ()=>{
             htmlFor="fullname"
             className="block text-gray-700 font-medium mb-1"
           >
-            Full Name{" "};
+            Full Name{" "}
 
             
           </label>
@@ -174,9 +180,10 @@ const handlegoogleAuth=async ()=>{
         </div>
 
         <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323]"
-        style={{backgroundColor:primarycolor,color:"white"}} onClick={()=>{handelsignup()}}>signup</button>
-
-        <p className='text-red-500 text-center my-[10px]'>*{err}</p>
+        style={{backgroundColor:primarycolor,color:"white"}} onClick={()=>{handelsignup()}}>
+         {loading? <ClipLoader size={20} color="white"/>:"signup"}</button>
+{err && <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
+        
         
          <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323] border-gray-400 hover:bg-gray-200"
          onClick={handlegoogleAuth} >

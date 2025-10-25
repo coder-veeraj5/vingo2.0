@@ -3,6 +3,7 @@ import React from 'react'
 import { useState } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from "react-spinners";
 import { url } from "../App";
 function Forgotpassword() {
 const [step, setstep] = useState(1)
@@ -10,12 +11,15 @@ const [email, setemail] = useState("")
 const [otp, setotp] = useState("")
 const [newpassword, setnewpassword] = useState("")
 const [confirmpass, setconfirmpass] = useState("")
+ const [err, seterr] = useState("")
+ const [loading, setloading] = useState(false)
 const primarycolor = "#ff4d2d";
 
   const navigate= useNavigate()
 
 
 const handlesendotp=async()=>{
+  setloading(true)
   try {
     
     const result= await axios.post(`${url}/api/auth/send-otp`,{
@@ -26,13 +30,17 @@ const handlesendotp=async()=>{
   )
   console.log(result)
   setstep(2)
+  seterr("")
+  setloading(false)
   } catch (error) {
-    console.log("error in handlesend otp:",error.message)
+   seterr(error?.response?.data?.message);
+     setloading(false)
   }
 }
 
 
 const handleverifyotp=async()=>{
+    setloading(true)
   try {
     
     const result= await axios.post(`${url}/api/auth/verify-otp`,{
@@ -43,15 +51,18 @@ const handleverifyotp=async()=>{
   )
   console.log(result)
   setstep(3)
+  seterr("")
+    setloading(false)
   } catch (error) {
-    console.log("error",error.message)
+  seterr(error?.response?.data?.message);
+    setloading(false)
   }
 }
 
 const handleresetpassword=async()=>{
-
+  setloading(true)
 if(newpassword!==confirmpass){
-  return alert("Passwords do not match");
+  return seterr("Passwords do not match")
 }
   try {
      const result= await axios.post(`${url}/api/auth/reset-pass`,{
@@ -60,10 +71,14 @@ if(newpassword!==confirmpass){
     {withCredentials:true}
     
   )
+   setloading(false)
   navigate("/signin")
   console.log(result)
+  seterr("")
+  
   } catch (error) {
-    console.log("error",error.message)
+  seterr(error?.response?.data?.message);
+   setloading(false)
   }
 }
 
@@ -95,7 +110,11 @@ if(newpassword!==confirmpass){
               onChange={(e)=>setemail(e.target.value)} value={email} required/>
 
                  <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323]"
-            style={{backgroundColor:primarycolor,color:"white"}} onClick={handlesendotp}>send OTP</button>
+            style={{backgroundColor:primarycolor,color:"white"}} onClick={handlesendotp}>
+                {loading? <ClipLoader size={20} color="white"/>:"send OTP"}  </button>
+             
+            {err && 
+        <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
         </div>
 
      
@@ -120,7 +139,10 @@ if(newpassword!==confirmpass){
               onChange={(e)=>setotp(e.target.value)} value={otp} required/>
 
                  <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323]"
-            style={{backgroundColor:primarycolor,color:"white"}} onClick={handleverifyotp}>Verify OTP</button>
+            style={{backgroundColor:primarycolor,color:"white"}} onClick={handleverifyotp}>
+              {loading? <ClipLoader size={20} color="white"/>:"Verify OTP"} </button>
+            {err && 
+        <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
         </div>}
          {step==3 && 
          
@@ -154,7 +176,10 @@ if(newpassword!==confirmpass){
               
 
                  <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323]"
-            style={{backgroundColor:primarycolor,color:"white"}} onClick={handleresetpassword}>Reset password</button>
+            style={{backgroundColor:primarycolor,color:"white"}} onClick={handleresetpassword}>
+               {loading? <ClipLoader size={20} color="white"/>:"Reset password"}</button>
+            {err && 
+        <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
         </div>}
         </div>
    

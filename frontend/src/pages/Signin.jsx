@@ -9,13 +9,15 @@ import axios from "axios"
 import { url } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners";
 function Signin() {
   const primarycolor = "#ff4d2d";
   const hovercolor = "#e64323";
   const bgcolor = "#fff9f6";
   const bordercolor = "#ddd";
   const [showpassword, setshowpassword] = useState(false);
-
+ const [err, seterr] = useState("")
+   const [loading, setloading] = useState(false)
   const [email, setemail] = useState();
   const [password, setpassword] = useState();
 
@@ -23,6 +25,7 @@ function Signin() {
 
   const handelsignin=async()=>{
 // console.log({ fullname, email, mobile, password, role });
+setloading(true)
     try {
       const result = await axios.post(`${url}/api/auth/signin`,{
       email,password
@@ -32,10 +35,11 @@ function Signin() {
 }
     )
       console.log(result)
-
+      seterr("");
+setloading(false)
     } catch (error) {
-      console.log("Signup error:", error.response?.data || error.message);
-
+     seterr(error?.response?.data?.message);
+setloading(false)
   }
   const handlegoogleAuth=async ()=>{
   
@@ -121,7 +125,10 @@ function Signin() {
           
 
         <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323]"
-        style={{backgroundColor:primarycolor,color:"white"}} onClick={()=>{handelsignin()}}>signin</button>
+        style={{backgroundColor:primarycolor,color:"white"}} onClick={()=>{handelsignin()}}>
+           {loading? <ClipLoader size={20} color="white"/>:"signin"} </button>
+        {err && 
+        <p className='text-red-500 text-center my-[10px]'>*{err}</p>}
         
          <button className="w-full mt-4 flex item-center justify-center gap-2 border rounded-lg py-2 transition duration-200 hover:bg-[#e64323] border-gray-400 hover:bg-gray-200"
       onClick={handlegoogleAuth}><FcGoogle size={20} /> <span>signin with google</span></button>
