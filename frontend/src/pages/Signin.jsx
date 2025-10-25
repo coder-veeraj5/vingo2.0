@@ -41,7 +41,10 @@ setloading(false)
      seterr(error?.response?.data?.message);
 setloading(false)
   }
-  const handlegoogleAuth=async ()=>{
+ 
+
+}
+ const handlegoogleAuth=async ()=>{
   
   const provider=new GoogleAuthProvider();
 
@@ -58,8 +61,6 @@ setloading(false)
   } catch (error) {
     console.log(error)
   }
-}
-
 }
   return (
     <div

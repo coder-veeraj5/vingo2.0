@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 import connectDb from "./config/db.js";
 import cookieParser from "cookie-parser";
 import authrouter from "./routes/auth.route.js";
+import userrouter from "./routes/user.route.js";
 import cors from "cors"
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.use(cors({
 app.use(express.json()); //convert frontend data into json
 app.use(cookieParser())
 app.use('/api/auth',authrouter)
-
+app.use('/api/user',userrouter)
 
 const port=process.env.PORT || 5000
 
